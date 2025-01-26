@@ -232,19 +232,12 @@ fn pokemon_type(type1: i32, type2: i32)
         println!("Pokemon's Type: {} and {}", get_type(type1), get_type(type2));
     }
 
-    let neutral: Vec<usize> = type_neutral(type1, type2);
-    let weak: Vec<usize> = type_weakness(type1, type2);
-    let quad_weak: Vec<usize> = type_quadWeakness(type1, type2);
-    let resistance: Vec<usize> = type_resistance(type1, type2);
-    let double_resistance: Vec<usize> = type_doubleResistance(type1, type2);
-    let immunity: Vec<usize> = type_immunity(type1, type2);
-
-    print_effectiveness("Types that are neutral against this pokemon(x1): ".to_string(), neutral);
-    print_effectiveness("Types that this pokemon is weak to(x2): ".to_string(), weak);
-    print_effectiveness("Types that this pokemon is quad weak to(x4): ".to_string(), quad_weak);
-    print_effectiveness("Types that this pokemon resists(x0.5): ".to_string(), resistance);
-    print_effectiveness("Types that this pokemon double resists(x0.25): ".to_string(), double_resistance);
-    print_effectiveness("Types that this pokemon is immune to(x0): ".to_string(), immunity);
+    print_effectiveness("Types that are neutral against this pokemon(x1): ".to_string(), type_neutral(type1, type2));
+    print_effectiveness("Types that this pokemon is weak to(x2): ".to_string(), type_weakness(type1, type2));
+    print_effectiveness("Types that this pokemon is quad weak to(x4): ".to_string(), type_quadWeakness(type1, type2));
+    print_effectiveness("Types that this pokemon resists(x0.5): ".to_string(), type_resistance(type1, type2));
+    print_effectiveness("Types that this pokemon double resists(x0.25): ".to_string(), type_doubleResistance(type1, type2));
+    print_effectiveness("Types that this pokemon is immune to(x0): ".to_string(), type_immunity(type1, type2));
 }
 
 
@@ -255,7 +248,7 @@ fn main()
     //example of a single type check(normal in this case): pokemon_type(13, 20);
     //example of a dual type check(Psychic and Ice in this case): pokemon_type(13, 14);
 
-    pokemon_type(13, 20); //because 20 is an out of bounds value our function checks 
+    pokemon_type(6, 20); //because 20 is an out of bounds value our function checks 
     //just a singular type to allow for singular type checking instead of a dual type checking
     //(this is on purpose to allow single type checks)
 }
