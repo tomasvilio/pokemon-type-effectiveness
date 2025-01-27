@@ -1,3 +1,6 @@
+//used to not have to write std::io every time
+use std::io::{self, Write}; //write used cuz we need flush
+
 const TYPE_MATCHUP: [[f32; 18]; 18] = 
 [
     // NORMAL, FIGHT,  FLYING, POISON, GROUND, ROCK,   BUG,    GHOST,  STEEL,  FIRE,   WATER,  GRASS,  ELECTR, PSYCHC, ICE,    DRAGON, DARK,   FAIRY
@@ -28,6 +31,13 @@ const TYPE_MATCHUP: [[f32; 18]; 18] =
 //all other types.
 //for example, the type effectiveness of water against grass would be 0.5
 
+//this array contains all the valid types
+const valid_types: [&str; 18] =
+[
+    "NORMAL", "FIRE", "WATER", "ELECTRIC", "GRASS", "ICE", 
+    "FIGHTING", "POISON", "GROUND", "FLYING", "PSYCHIC", 
+    "BUG", "ROCK", "GHOST", "DRAGON", "DARK", "STEEL", "FAIRY"
+];
 
 //this function returns the type effectiveness of type1 against type2
 fn type_effectiveness(type1: i32, type2: i32) -> Vec<f32>
@@ -191,6 +201,32 @@ fn get_type(type1: i32) -> String
     }
 }
 
+fn get_number(Type: &str) -> i32
+{
+    match Type
+    {
+        "NORMAL" => 0,
+        "FIGHTING" => 1,
+        "FLYING" => 2,
+        "POISON" => 3,
+        "GROUND" => 4,
+        "ROCK" => 5,
+        "BUG" => 6,
+        "GHOST" => 7,
+        "STEEL" => 8,
+        "FIRE" => 9,
+        "WATER" => 10,
+        "GRASS" => 11,
+        "ELECTRIC" => 12,
+        "PSYCHIC" => 13,
+        "ICE" => 14,
+        "DRAGON" => 15,
+        "DARK" => 16,
+        "FAIRY" => 17,
+        _ => -1
+    }
+}
+
 //this function prints the text explaining what the typings refer to and separates them with commas
 //this was initially in the pokemon_type function, but i made it a separate function for cleaner code and less
 //redundancy
@@ -240,15 +276,124 @@ fn pokemon_type(type1: i32, type2: i32)
     print_effectiveness("Types that this pokemon is immune to(x0): ".to_string(), type_immunity(type1, type2));
 }
 
+fn command(command: String)
+{
+    clearscreen::clear().expect("failed to clear screen");
+}
+
+fn press_enter()
+{
+    let mut input = String::new();
+    print!("Press enter to continue...");
+    io::stdout().flush().unwrap();
+    io::stdin().read_line(&mut input).unwrap();
+}
+
+fn user_input(Message: String, Type: &mut String)
+{
+    loop
+    {
+        command("clear || cls".to_string());
+
+        let mut input = String::new();
+        print!("{}", Message);
+        io::stdout().flush().unwrap();
+
+        match io::stdin().read_line(&mut input)
+        {
+            Ok(_) => 
+            {
+                let input = input.trim().to_uppercase(); //remove the \n character from the input and spaces on the beggining and the end
+                if valid_types.contains(&input.as_str())
+                {
+                    command("clear || cls".to_string());
+                    println!("You selected the type: {}", input);
+
+                    press_enter();
+
+                    *Type = input;
+                    break;
+                } else if input == "HELP"
+                {
+                    command("clear || cls".to_string());
+                    println!("Valid types are: {:?}", valid_types);
+
+                    press_enter();
+
+                    continue;
+                } else
+                {
+                    command("clear || cls".to_string());
+                    println!("Invalid pokemon type, please try again");
+                    
+                    press_enter();
+
+                    continue;
+                }
+            },
+            Err(_) => 
+            {
+                println!("Error reading input");
+                continue;
+            }
+        }
+    }
+}
 
 //here we call the pokemon_type function that shows us the results of the type effectiveness of the chosen type/s
 fn main() 
 {
+    let mut type1 = String::new();
+    let mut type2 = String::new();
     
-    //example of a single type check(normal in this case): pokemon_type(13, 20);
-    //example of a dual type check(Psychic and Ice in this case): pokemon_type(13, 14);
 
-    pokemon_type(6, 20); //because 20 is an out of bounds value our function checks 
-    //just a singular type to allow for singular type checking instead of a dual type checking
-    //(this is on purpose to allow single type checks)
+    user_input("Insert a pokemon Typing(EX: Flying, Grass, etc..)\nType 'help' for a list of valid types\n>> ".to_string(), &mut type1);
+
+    loop
+    {
+        command("clear || cls".to_string());
+
+        let mut input = String::new();
+        print!("Do you want to add a secondary typing?(y/n)\n>> ");
+        io::stdout().flush().unwrap();
+
+        match io::stdin().read_line(&mut input)
+        {
+            Ok(_) => 
+            {
+                let input = input.trim().to_lowercase(); //remove the \n character from the input and spaces on the beggining and the end
+                if input == "y"
+                {
+                    if input == "y"
+                    {
+                        user_input("Insert a secondary pokemon Typing(EX: Flying, Grass, etc..)\nType 'help' for a list of valid types\n>> ".to_string(), &mut type2);
+                    }
+
+                    break;
+                } else if input == "n"
+                {
+                    break;
+                } else
+                {
+                    command("clear || cls".to_string());
+                    println!("Invalid option, please try again.");
+
+                    press_enter();
+
+                    continue;
+                }
+            },
+            Err(_) => 
+            {
+                println!("Error reading input");
+                continue;
+            }
+        }
+    }
+
+    command("clear || cls".to_string());   
+    
+    pokemon_type(get_number(&type1), get_number(&type2));
+
+    press_enter();
 }
